@@ -2,8 +2,10 @@ package com.example.demo.controller;
 
 import java.util.List;
 
-import com.example.demo.dao.AuthUserDao;
 import com.example.demo.entity.AuthUser;
+import com.example.demo.exception.UserException;
+import com.example.demo.serviceImpl.AuthUserServiceImpl;
+import com.example.demo.status.UserResultCode;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,27 +21,34 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/user")
 public class AuthUserController {
     @Autowired
-    private AuthUserDao authUserDao;
+    private AuthUserServiceImpl authUserService;
+
+    @PostMapping("/login")
+    boolean login(@RequestBody AuthUser user) throws UserException {
+        if (!authUserService.login(user))
+            throw new UserException(UserResultCode.LOGIN_FAILD);
+
+        return true;
+    }
 
     @GetMapping("/users")
     List<AuthUser> getUsers() {
-        return authUserDao.queryAll(new AuthUser());
+        return authUserService.getUsers();
     }
 
     @PostMapping("/users")
     int addUser(@RequestBody AuthUser user) {
-        return authUserDao.insert(user);
+        return authUserService.addUser(user);
     }
 
     @DeleteMapping("/users/{id}")
     int deleteUser(@PathVariable("id") int id) {
-        return authUserDao.deleteById(id);
-
+        return authUserService.deleteUser(id);
     }
 
     @PutMapping("/users")
     int editUser(@RequestBody AuthUser user) {
-        return authUserDao.update(user);
+        return authUserService.editUser(user);
     }
 
 }
