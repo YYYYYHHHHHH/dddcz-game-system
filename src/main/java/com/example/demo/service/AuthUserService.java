@@ -18,6 +18,6 @@ public interface AuthUserService {
     int editUser(AuthUser user);
 
     // 用户登录
-    boolean login(AuthUser user);
+    AuthUser login(AuthUser user);
 
 }

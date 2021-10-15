@@ -36,7 +36,9 @@ public class AuthUserServiceImpl implements AuthUserService {
     }
 
     @Override
-    public boolean login(AuthUser user) {
-        return dao.queryAll(user).size() == 0 ? false : true;
+    public AuthUser login(AuthUser user) {
+        List<AuthUser> list = dao.queryAll(user);
+
+        return list.size() == 0 ? null : list.get(0);
     }
 }

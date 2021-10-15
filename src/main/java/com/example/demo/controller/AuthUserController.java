@@ -24,11 +24,12 @@ public class AuthUserController {
     private AuthUserServiceImpl authUserService;
 
     @PostMapping("/login")
-    boolean login(@RequestBody AuthUser user) throws UserException {
-        if (!authUserService.login(user))
+    AuthUser login(@RequestBody AuthUser user) throws UserException {
+        AuthUser res = authUserService.login(user);
+        if (res.equals(null))
             throw new UserException(UserResultCode.LOGIN_FAILD);
 
-        return true;
+        return res;
     }
 
     @GetMapping("/users")
