@@ -34,7 +34,7 @@ public class AuthUserController {
     @PostMapping("/login")
     AuthUser login(@RequestBody AuthUser user) throws UserException {
         AuthUser res = authUserService.login(user);
-        if (res.equals(null))
+        if (res == null)
             throw new UserException(UserResultCode.LOGIN_FAILD);
 
         return res;
@@ -63,6 +63,10 @@ public class AuthUserController {
     // 注入配置中图片保存路径
     @Value("${user.filepath}")
     private String filePath;
+    @Value("${user.ip}")
+    private String ip;
+    @Value("${server.port}")
+    private String port;
 
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
     String uploadAvatar(@RequestPart("avatar") MultipartFile multipartFile, @RequestParam("id") int id)
@@ -74,7 +78,7 @@ public class AuthUserController {
         File file = new File(filePath + uuid + fileSuffix);
         multipartFile.transferTo(file);
 
-        String avatarUrl = "http://localhost:8080/api/images/" + uuid + fileSuffix;
+        String avatarUrl = "http://" + ip + ":" + port + "/api/images/" + uuid + fileSuffix;
         AuthUser user = new AuthUser();
         user.setAvatar(avatarUrl);
         user.setId(id);
