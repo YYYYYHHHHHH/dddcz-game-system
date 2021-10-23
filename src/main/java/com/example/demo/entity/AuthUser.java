@@ -51,7 +51,49 @@ public class AuthUser implements Serializable {
     * 创建时间
     */
     private Date createdTime;
+    
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        AuthUser other = (AuthUser) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        return true;
+    }
+    public AuthUser() {
 
+    }
+    
+    public AuthUser(int userId) {
+        this.id = userId;
+    }
+    public AuthUser(AuthUser user) {
+        this.id = user.id;
+        this.code = user.code;
+        this.name = user.name;
+        this.password = user.password;
+        this.nickname = user.nickname;
+        this.avatar = user.avatar;
+        this.sign = user.sign;
+        this.phone = user.phone;
+        this.email = user.email;
+        this.createdTime = user.createdTime;
+    }
 
     public Integer getId() {
         return id;

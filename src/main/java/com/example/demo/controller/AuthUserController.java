@@ -5,9 +5,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+import com.alibaba.fastjson.JSONObject;
+import com.example.demo.component.WebSocketServer;
 import com.example.demo.entity.AuthUser;
+import com.example.demo.entity.GroupChat.SocketData;
 import com.example.demo.exception.UserException;
 import com.example.demo.serviceImpl.AuthUserServiceImpl;
+import com.example.demo.serviceImpl.GroupChatServiceImpl;
 import com.example.demo.status.UserResultCode;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +34,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class AuthUserController {
     @Autowired
     private AuthUserServiceImpl authUserService;
+    @Autowired
+    private WebSocketServer webSocketServer;
 
     @PostMapping("/login")
     AuthUser login(@RequestBody AuthUser user) throws UserException {
@@ -37,6 +43,7 @@ public class AuthUserController {
         if (res == null)
             throw new UserException(UserResultCode.LOGIN_FAILD);
 
+        webSocketServer.sendInfoAllOnLine(JSONObject.toJSONString(new SocketData(1, res)));
         return res;
     }
 
