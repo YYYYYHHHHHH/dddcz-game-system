@@ -3,6 +3,8 @@ package com.example.demo.component;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -80,9 +82,20 @@ public class WebSocketServer {
             //从set中删除
             subOnlineCount();
         }
-        log.info("用户退出:"+userId+",当前在线人数为:" + getOnlineCount());
-        AuthUser user = authUserDao.queryById(Integer.parseInt(userId));
-        sendInfoAllOnLine(JSONObject.toJSONString(new SocketData(2, user)));
+        // 如果15s中还没上线就发送离线通知
+        Timer nTimer = new Timer();
+        nTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if(!webSocketMap.containsKey(userId)) {
+                    log.info("用户退出:"+userId+",当前在线人数为:" + getOnlineCount());
+        
+                    AuthUser user = authUserDao.queryById(Integer.parseInt(userId));
+                    sendInfoAllOnLine(JSONObject.toJSONString(new SocketData(2, user)));
+                }
+            }
+        }, 15000);
+        
     }
 
     /**
