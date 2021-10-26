@@ -1,9 +1,10 @@
 package com.example.demo.serviceImpl;
 
-import java.io.Console;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.annotation.Resource;
 
 import com.alibaba.fastjson.JSONObject;
 import com.example.demo.component.WebSocketServer;
@@ -14,6 +15,7 @@ import com.example.demo.entity.GroupChat.SocketData;
 import com.example.demo.service.GroupChatService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,8 +24,10 @@ public class GroupChatServiceImpl implements GroupChatService {
     private WebSocketServer wServer;
     @Autowired
     private AuthUserServiceImpl authUserServiceImpl;
+    @Resource
+    private RedisTemplate<String, Chat>  redisTemplate;
 
-    private List<Chat> chats = new ArrayList<>();
+    // private List<Chat> chats = new ArrayList<>();
 
     private List<AuthUser> lUsers = null;
 
@@ -43,13 +47,7 @@ public class GroupChatServiceImpl implements GroupChatService {
 
     @Override
     public List<Chat> getChatByLimit(int start, int num) {
-        // int length = chats.size();
-        // if(start > length - 1 || length == 0) 
-        //     return chats; 
-        
-        // return chats.subList(start, start + num > length ? length : start + num);
-
-        // 先不做分页
+        List<Chat> chats = (List<Chat>) redisTemplate.opsForList().range("chats", start, start + num);
         return chats;
     }
 
@@ -57,7 +55,8 @@ public class GroupChatServiceImpl implements GroupChatService {
     public void sendChat(int userId, String mes) {
         AuthUser user = lUsers.get(lUsers.indexOf(new AuthUser(userId)));
         Chat chat = new Chat(user, mes, new Date(System.currentTimeMillis()));
-        chats.add(chat);
+        redisTemplate.opsForList().leftPush("chats", chat);
+
         // 群发消息
         returnChat(new SocketData(3, chat));
     }

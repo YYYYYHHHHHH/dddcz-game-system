@@ -1,10 +1,11 @@
 package com.example.demo.entity.GroupChat;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.example.demo.entity.AuthUser;
 
-public class Chat {
+public class Chat implements Serializable{
     private Integer id;
 
     private String nickname;
